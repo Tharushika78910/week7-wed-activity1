@@ -1,27 +1,32 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import {
+  createBrowserRouter,
+  RouterProvider,
+} from "react-router-dom";
 
-import Home from "./pages/HomePage";
+import MainLayout from "./layouts/MainLayout";
+
+import HomePage from "./pages/HomePage";
 import AddProductPage from "./pages/AddProductPage";
-import Navbar from "./components/Navbar";
-import NotFoundPage from "./pages/NotFoundPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
+import EditProductPage from "./pages/EditProductPage";
+import NotFoundPage from "./pages/NotFoundPage";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <MainLayout />,
+    children: [
+      { index: true, element: <HomePage /> },
+      { path: "add-product", element: <AddProductPage /> },
+      { path: "products/:productId", element: <ProductDetailPage /> },
+      { path: "products/:productId/edit", element: <EditProductPage /> },
+      { path: "*", element: <NotFoundPage /> },
+    ],
+  },
+]);
 
 const App = () => {
-  return (
-    <div className="App">
-      <BrowserRouter>
-        <Navbar />
-        <div className="content">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/add-product" element={<AddProductPage />} />
-            <Route path="/products/:productId" element={<ProductDetailPage />} />
-            <Route path="*" element={<NotFoundPage />} />
-          </Routes>
-        </div>
-      </BrowserRouter>
-    </div>
-  );
+  return <RouterProvider router={router} />;
 };
 
 export default App;

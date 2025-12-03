@@ -1,9 +1,10 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 const ProductDetailPage = () => {
   const navigate = useNavigate();
   const { productId } = useParams();
+
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -88,7 +89,21 @@ const ProductDetailPage = () => {
               </>
             )}
 
-            <button onClick={() => onDeleteClick(product.id)}>Delete</button>
+            <div className="detail-buttons">
+              <Link
+                to={`/products/${product._id}/edit`}
+                className="edit-btn"
+              >
+                Edit
+              </Link>
+
+              <button
+                onClick={() => onDeleteClick(product._id)}
+                className="delete-btn"
+              >
+                Delete
+              </button>
+            </div>
           </>
         )
       )}

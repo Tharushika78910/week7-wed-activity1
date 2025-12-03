@@ -15,6 +15,10 @@ const ProductListing = ({ product, onDelete }) => {
         View
       </Link>
 
+      <Link to={`/products/${product.id}/edit`} className="edit-btn">
+        Edit
+      </Link>
+
       <button
         onClick={() => onDelete(product.id)}
         className="delete-btn"
