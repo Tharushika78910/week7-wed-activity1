@@ -26,17 +26,53 @@ const createProduct = async (req, res) => {
 
 // GET /products/:productId
 const getProductById = async (req, res) => {
-  res.send("getProductById");
+  const { productId } = req.params;
+
+  // Validate MongoDB ObjectId
+  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    return res.status(400).json({ message: "Invalid product ID" });
+  }
+
+  try {
+    const product = await Product.findById(productId);
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    res.status(200).json(product);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch product" });
+  }
 };
 
-// PUT /products/:productId
+// PUT 
 const updateProduct = async (req, res) => {
   res.send("updateProduct");
 };
 
 // DELETE /products/:productId
 const deleteProduct = async (req, res) => {
-  res.send("deleteProduct");
+  const { productId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    return res.status(400).json({ message: "Invalid product ID" });
+  }
+
+  try {
+    const deletedProduct = await Product.findByIdAndDelete(productId);
+
+    if (!deletedProduct) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    res.status(200).json({
+      message: "Product deleted successfully",
+      product: deletedProduct,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to delete product" });
+  }
 };
 
 module.exports = {
