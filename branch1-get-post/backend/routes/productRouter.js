@@ -7,7 +7,12 @@ const {
   deleteProduct,
 } = require("../controllers/productController");
 
+const requireAuth = require("../middleware/requireAuth");
+
 const router = express.Router();
+
+// 🔐 All routes below require authentication
+router.use(requireAuth);
 
 // GET all products
 router.get("/", getAllProducts);
