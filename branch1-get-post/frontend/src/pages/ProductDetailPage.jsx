@@ -13,6 +13,12 @@ const ProductDetailPage = () => {
   const user = JSON.parse(localStorage.getItem("user"));
   const token = user?.token;
 
+  useEffect(() => {
+    if (!token) {
+      navigate("/login"); 
+    }
+  }, [token, navigate]);
+
   // DELETE /api/products/:id
   const deleteProduct = async (id) => {
     if (!token) {
@@ -111,10 +117,7 @@ const ProductDetailPage = () => {
             )}
 
             <div className="detail-buttons">
-              <Link
-                to={`/products/${product._id}/edit`}
-                className="edit-btn"
-              >
+              <Link to={`/products/${product._id}/edit`} className="edit-btn">
                 Edit
               </Link>
 

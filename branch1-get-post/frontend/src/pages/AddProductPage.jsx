@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const AddProductPage = () => {
@@ -19,6 +19,14 @@ const AddProductPage = () => {
   const user = JSON.parse(localStorage.getItem("user"));
   const token = user?.token;
 
+  
+  useEffect(() => {
+    if (!token) {
+      
+      navigate("/login");
+    }
+  }, [token, navigate]);
+
   const addProduct = async (newProduct) => {
     if (!token) {
       console.error("User must be logged in to create products");
@@ -30,7 +38,7 @@ const AddProductPage = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`, // ✅ protected backend route
         },
         body: JSON.stringify(newProduct),
       });

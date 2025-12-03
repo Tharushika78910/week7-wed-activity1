@@ -24,6 +24,13 @@ const EditProductPage = () => {
   const [contactPhone, setContactPhone] = useState("");
   const [rating, setRating] = useState("");
 
+  
+  useEffect(() => {
+    if (!token) {
+      navigate("/login"); 
+    }
+  }, [token, navigate]);
+
   // PUT /api/products/:productId
   const updateProduct = async (updatedProduct) => {
     if (!token) {
@@ -54,6 +61,8 @@ const EditProductPage = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       if (!token) {
+        // in practice, redirect effect above will run,
+        // but we keep this guard as a safety.
         setError("You must be logged in to view this page.");
         setLoading(false);
         return;
