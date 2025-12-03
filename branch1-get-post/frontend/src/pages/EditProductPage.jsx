@@ -9,7 +9,10 @@ const EditProductPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Form fields
+  // Get user token
+  const user = JSON.parse(localStorage.getItem("user"));
+  const token = user?.token;
+
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [description, setDescription] = useState("");
@@ -23,11 +26,17 @@ const EditProductPage = () => {
 
   // PUT /api/products/:productId
   const updateProduct = async (updatedProduct) => {
+    if (!token) {
+      setError("You must be logged in.");
+      return false;
+    }
+
     try {
       const res = await fetch(`/api/products/${productId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(updatedProduct),
       });
@@ -36,6 +45,7 @@ const EditProductPage = () => {
       return true;
     } catch (error) {
       console.error("Error updating product:", error);
+      setError(error.message);
       return false;
     }
   };
@@ -43,14 +53,24 @@ const EditProductPage = () => {
   // GET /api/products/:productId
   useEffect(() => {
     const fetchProduct = async () => {
+      if (!token) {
+        setError("You must be logged in to view this page.");
+        setLoading(false);
+        return;
+      }
+
       try {
-        const res = await fetch(`/api/products/${productId}`);
+        const res = await fetch(`/api/products/${productId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
         if (!res.ok) throw new Error("Failed to fetch product");
 
         const data = await res.json();
         setProduct(data);
 
-        // Initialize form fields from fetched product
         setTitle(data.title);
         setCategory(data.category);
         setDescription(data.description);
@@ -73,9 +93,8 @@ const EditProductPage = () => {
     };
 
     fetchProduct();
-  }, [productId]);
+  }, [productId, token]);
 
-  // Submit updated product
   const submitForm = async (e) => {
     e.preventDefault();
 
@@ -94,7 +113,6 @@ const EditProductPage = () => {
     };
 
     const success = await updateProduct(updatedProduct);
-
     if (success) {
       navigate(`/products/${productId}`);
     }

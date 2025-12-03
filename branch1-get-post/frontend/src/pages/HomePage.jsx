@@ -6,13 +6,24 @@ const Home = () => {
   const [isPending, setIsPending] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch all products on mount
+  const user = JSON.parse(localStorage.getItem("user"));
+  const token = user?.token;
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch("/api/products");
+        if (!token) {
+          throw new Error("You must be logged in to view products.");
+        }
+
+        const res = await fetch("/api/products", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
         if (!res.ok) {
-          throw new Error("Could not fetch the data for that resource");
+          throw new Error("Could not fetch products (unauthorized or server error).");
         }
 
         const data = await res.json();
@@ -26,20 +37,26 @@ const Home = () => {
     };
 
     fetchProducts();
-  }, []);
+  }, [token]);
 
   // DELETE handler
   const handleDelete = async (productId) => {
     try {
+      if (!token) {
+        throw new Error("Not authorized to delete products.");
+      }
+
       const res = await fetch(`/api/products/${productId}`, {
         method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (!res.ok) {
         throw new Error("Failed to delete product");
       }
 
-      // Remove deleted product from UI
       setProducts((prevProducts) =>
         prevProducts.filter((product) => product.id !== productId)
       );
