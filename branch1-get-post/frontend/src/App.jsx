@@ -1,10 +1,10 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-// pages & components
 import Home from "./pages/HomePage";
 import AddProductPage from "./pages/AddProductPage";
 import Navbar from "./components/Navbar";
 import NotFoundPage from "./pages/NotFoundPage";
+import ProductDetailPage from "./pages/ProductDetailPage";
 
 const App = () => {
   return (
@@ -15,6 +15,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/add-product" element={<AddProductPage />} />
+            <Route path="/products/:productId" element={<ProductDetailPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </div>
