@@ -15,12 +15,22 @@ const AddProductPage = () => {
 
   const navigate = useNavigate();
 
+  // Get token from localStorage
+  const user = JSON.parse(localStorage.getItem("user"));
+  const token = user?.token;
+
   const addProduct = async (newProduct) => {
+    if (!token) {
+      console.error("User must be logged in to create products");
+      return false;
+    }
+
     try {
       const res = await fetch("/api/products", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(newProduct),
       });
@@ -35,7 +45,7 @@ const AddProductPage = () => {
     return true;
   };
 
-  const submitForm = (e) => {
+  const submitForm = async (e) => {
     e.preventDefault();
 
     const newProduct = {
@@ -52,10 +62,10 @@ const AddProductPage = () => {
       },
     };
 
-    addProduct(newProduct);
-    console.log(newProduct);
-
-    return navigate("/");
+    const success = await addProduct(newProduct);
+    if (success) {
+      navigate("/");
+    }
   };
 
   return (

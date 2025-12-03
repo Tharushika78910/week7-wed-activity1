@@ -9,30 +9,55 @@ const ProductDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Get user token
+  const user = JSON.parse(localStorage.getItem("user"));
+  const token = user?.token;
+
   // DELETE /api/products/:id
   const deleteProduct = async (id) => {
+    if (!token) {
+      setError("Unauthorized: Please log in.");
+      return false;
+    }
+
     try {
       const res = await fetch(`/api/products/${id}`, {
         method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (!res.ok) {
         throw new Error("Failed to delete product");
       }
+
+      return true;
     } catch (error) {
       console.error("Error deleting product:", error);
-      throw error;
+      setError(error.message);
+      return false;
     }
   };
 
   // GET /api/products/:productId
   useEffect(() => {
     const fetchProduct = async () => {
+      if (!token) {
+        setError("Unauthorized: Please log in.");
+        setLoading(false);
+        return;
+      }
+
       try {
-        const res = await fetch(`/api/products/${productId}`);
+        const res = await fetch(`/api/products/${productId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
         if (!res.ok) {
-          throw new Error("Network response was not ok");
+          throw new Error("Failed to fetch product");
         }
 
         const data = await res.json();
@@ -46,7 +71,7 @@ const ProductDetailPage = () => {
     };
 
     fetchProduct();
-  }, [productId]);
+  }, [productId, token]);
 
   const onDeleteClick = async (id) => {
     const confirmed = window.confirm(
@@ -54,12 +79,8 @@ const ProductDetailPage = () => {
     );
     if (!confirmed) return;
 
-    try {
-      await deleteProduct(id);
-      navigate("/");
-    } catch (err) {
-      console.error(err);
-    }
+    const success = await deleteProduct(id);
+    if (success) navigate("/");
   };
 
   return (

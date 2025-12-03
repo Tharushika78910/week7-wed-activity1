@@ -10,6 +10,8 @@ import AddProductPage from "./pages/AddProductPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
 import EditProductPage from "./pages/EditProductPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 
 const router = createBrowserRouter([
   {
@@ -17,9 +19,14 @@ const router = createBrowserRouter([
     element: <MainLayout />,
     children: [
       { index: true, element: <HomePage /> },
+
+      { path: "login", element: <Login /> },
+      { path: "signup", element: <Signup /> },
+
       { path: "add-product", element: <AddProductPage /> },
       { path: "products/:productId", element: <ProductDetailPage /> },
       { path: "products/:productId/edit", element: <EditProductPage /> },
+
       { path: "*", element: <NotFoundPage /> },
     ],
   },
